@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  resizework:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      LOCAL_SQL_HOST: host.docker.internal
+      DB_USER: sa
+      DB_PASS: P@ssw0rd!2025
+      DB_NAME: LAB_DEMO
+      TARGET_SIZE_MB: 5
+      MIN_JPEG_QUALITY: 60
+      TARGET_MAX_W: 1024
+      TARGET_MAX_H: 768

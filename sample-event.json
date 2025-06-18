@@ -1,0 +1,14 @@
+{
+  "type": "google.cloud.storage.object.v1.finalized",
+  "specversion": "1.0",
+  "source": "//storage.googleapis.com/projects/_/buckets/test-bkt",
+  "subject": "objects/demo/file_1.jpg",
+  "id": "local-test-1",
+  "time": "2025-06-13T09:00:00Z",
+  "data": {
+    "bucket": "test-bkt",
+    "name": "demo/file_1.jpg",
+    "contentType": "image/jpeg",
+    "metadata": { "imageid": "8374433E-F36B-1410-8ECA-00AF1B9A42E3" }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "profiles": {
+    "ResizeWork": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5088",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+
+        //======= Local SQL Server Container =======
+        "LOCAL_SQL_HOST": "localhost",
+        "DB_USER": "sa",
+        "DB_PASS": "P@ssw0rd!2025",
+        "DB_NAME": "LAB_DEMO",
+
+        //======= Image Size (optional) ============
+        "TARGET_SIZE_MB": 5,
+        "MIN_JPEG_QUALITY": 60,
+        "TARGET_MAX_W": "1024",
+        "TARGET_MAX_H": "768"
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+@ResizeWork_HostAddress = http://localhost:5259
+
+GET {{ResizeWork_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
