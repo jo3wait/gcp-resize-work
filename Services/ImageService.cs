@@ -68,7 +68,7 @@ public sealed class ImageService
 
         // 4. 上傳縮圖
         thumbStream.Position = 0;
-        var thumbKey = $"thumbs/{imageId}_{_targetBytes / 1_048_576}MB.jpg";
+        var thumbKey = $"thumbs/{imageId}.jpg"; //var thumbKey = $"thumbs/{imageId}_{_targetBytes / 1_048_576}MB.jpg";
         await _storage.UploadAsync(ev.Bucket, thumbKey, "image/jpeg", thumbStream, ct);
 
         return (thumbKey, imageId);
@@ -91,7 +91,7 @@ public sealed class ImageService
         await img.SaveAsJpegAsync(th, ct);
         th.Position = 0;
 
-        var key = $"thumbs/{imageId}_{maxW}.jpg";
+        var key = $"thumbs/{imageId}.jpg";  //var key = $"thumbs/{imageId}_{maxW}.jpg";
         await _storage.UploadAsync(ev.Bucket, key, "image/jpeg", th, ct);
         return (key, imageId);
     }
