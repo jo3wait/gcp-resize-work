@@ -14,8 +14,8 @@
         "DB_NAME": "LAB_DEMO",
 
         //======= Image Size (optional) ============
-        "TARGET_SIZE_MB": 5,
-        "MIN_JPEG_QUALITY": 60,
+        "TARGET_SIZE_MB": "5",
+        "MIN_JPEG_QUALITY": "60",
         "TARGET_MAX_W": "1024",
         "TARGET_MAX_H": "768"
       }
