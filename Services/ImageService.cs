@@ -14,8 +14,14 @@ public sealed class ImageService
     public ImageService(IStorage storage)
     {
         _storage = storage;
-        if (long.TryParse(Environment.GetEnvironmentVariable("TARGET_SIZE_MB"), out var mb))
-            _targetBytes = mb * 1_048_576L;            // MB → Bytes
+        // 先看 KB，再看 MB；都沒抓到則 null = 回到固定解析度模式
+        if (long.TryParse(Environment.GetEnvironmentVariable("TARGET_SIZE_KB"), out var kb))
+            _targetBytes = kb * 1_024L;
+        else if (long.TryParse(Environment.GetEnvironmentVariable("TARGET_SIZE_MB"), out var mb))
+            _targetBytes = mb * 1_048_576L;
+        else
+            _targetBytes = null;
+
         _minQuality = int.TryParse(Environment.GetEnvironmentVariable("MIN_JPEG_QUALITY"), out var q) ? q : 60;
     }
 

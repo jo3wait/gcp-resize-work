@@ -11,7 +11,8 @@
         // "DB_USER": "",
         // "DB_PASS": "",
         // "DB_NAME": "",
-        // "TARGET_SIZE_MB": "5"
+        // "TARGET_SIZE_MB": "5",
+        // "TARGET_SIZE_KB": "500",
         // "TARGET_MAX_W": "1024",
         // "TARGET_MAX_H": "768"
       }

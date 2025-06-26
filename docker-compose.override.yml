@@ -9,6 +9,7 @@ services:
       DB_PASS: P@ssw0rd!2025
       DB_NAME: LAB_DEMO
       TARGET_SIZE_MB: 5
+      TARGET_SIZE_KB: 500
       MIN_JPEG_QUALITY: 60
       TARGET_MAX_W: 1024
       TARGET_MAX_H: 768
