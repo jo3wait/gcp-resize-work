@@ -12,7 +12,7 @@ public sealed class SqlService
             UPDATE FILES
             SET    STATUS      = 'done',
                    THUMB_PATH  = @thumb,
-                   RESIZE_DT   = SYSUTCDATETIME()
+                   RESIZE_DT   = SYSDATETIME()
             WHERE  ID    = @id;
             """;
 
