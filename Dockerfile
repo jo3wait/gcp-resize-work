@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app .
 
-# 讓容器對外只聽 8080（Cloud Run 與本機統一）
+# 讓容器對外只聽 8084
 ENV ASPNETCORE_URLS=http://0.0.0.0:8084
 EXPOSE 8084
 

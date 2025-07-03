@@ -10,10 +10,12 @@ public sealed class ImageService
     private readonly IStorage _storage;
     private readonly long? _targetBytes;
     private readonly int _minQuality;
+    private readonly string? _thumbBucket;
 
     public ImageService(IStorage storage)
     {
         _storage = storage;
+
         // 先看 KB，再看 MB；都沒抓到則 null = 回到固定解析度模式
         if (long.TryParse(Environment.GetEnvironmentVariable("TARGET_SIZE_KB"), out var kb))
             _targetBytes = kb * 1_024L;
@@ -23,6 +25,9 @@ public sealed class ImageService
             _targetBytes = null;
 
         _minQuality = int.TryParse(Environment.GetEnvironmentVariable("MIN_JPEG_QUALITY"), out var q) ? q : 60;
+        
+        // 縮圖上傳的 bucket 名稱
+        _thumbBucket = Environment.GetEnvironmentVariable("THUMBS_BUCKET");
     }
 
     public async Task<(string thumbPath, string imageId)> ProcessAsync(
@@ -71,11 +76,12 @@ public sealed class ImageService
             }
             quality -= 10;                // 品質再降
         }
+        thumbStream.Position = 0;
 
         // 4. 上傳縮圖
-        thumbStream.Position = 0;
-        var thumbKey = $"thumbs/{imageId}.jpg"; //var thumbKey = $"thumbs/{imageId}_{_targetBytes / 1_048_576}MB.jpg";
-        await _storage.UploadAsync(ev.Bucket, thumbKey, "image/jpeg", thumbStream, ct);
+        var destBucket = _thumbBucket ?? ev.Bucket;
+        var thumbKey = $"{imageId}.jpg"; //var thumbKey = $"{imageId}_{(_targetBytes ?? ms.Length)/1024}KB.jpg";
+        await _storage.UploadAsync(destBucket, thumbKey, "image/jpeg", thumbStream, ct);
 
         return (thumbKey, imageId);
     }

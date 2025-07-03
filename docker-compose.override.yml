@@ -8,6 +8,7 @@ services:
       DB_USER: sa
       DB_PASS: P@ssw0rd!2025
       DB_NAME: LAB_DEMO
+      THUMBS_BUCKET: bucket_name
       TARGET_SIZE_MB: 5
       TARGET_SIZE_KB: 500
       MIN_JPEG_QUALITY: 60
