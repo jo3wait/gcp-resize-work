@@ -23,7 +23,6 @@ public sealed class ResizeController : ControllerBase
     /// 接收 CloudEvent（整包 JSON），只取 data 區段
     /// </summary>
     [HttpPost]
-    [Consumes("application/cloudevents+json")]
     public async Task<IActionResult> Handle([FromBody] JsonElement body,
                                             CancellationToken ct = default)
     {
