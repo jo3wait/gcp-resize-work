@@ -31,10 +31,24 @@ public sealed class ResizeController : ControllerBase
         _logger.LogDebug("Raw Body: {Body}", body.GetRawText());
 
         // 2) CloudEvent 'type' 檢查
-        if (!body.TryGetProperty("type", out var typeProp) ||
-            !string.Equals(typeProp.GetString(), GcsFinalizeEventType, StringComparison.Ordinal))
+        // 嘗試取得 type
+        if (!body.TryGetProperty("type", out var typeProp))
         {
-            _logger.LogWarning("Received non-finalize event: {Type}", typeProp.GetString());
+            _logger.LogWarning("No 'type' property in payload");
+            return BadRequest("Missing CloudEvent type");
+        }
+
+        _logger.LogDebug("Raw type property: {TypeRaw}", typeProp.GetRawText());
+
+        string eventType = typeProp.ValueKind switch
+        {
+            JsonValueKind.String => typeProp.GetString()!,
+            _ => typeProp.GetRawText().Trim('"')
+        };
+
+        if (!string.Equals(eventType, GcsFinalizeEventType, StringComparison.Ordinal))
+        {
+            _logger.LogWarning("Received non-finalize event: {Type}", eventType);
             return BadRequest("Not a GCS finalize event");
         }
 
