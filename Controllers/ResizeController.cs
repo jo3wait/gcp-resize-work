@@ -20,57 +20,18 @@ public sealed class ResizeController : ControllerBase
         => (_imageSvc, _sqlSvc, _logger) = (img, db, logger);
 
     /// <summary>
-    /// 接收 CloudEvent（整包 JSON），只取 data 區段
+    /// 接收 CloudEvent JSON
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Handle([FromBody] JsonElement body,
+    public async Task<IActionResult> Handle([FromBody] StorageEventData data,
                                             CancellationToken ct = default)
     {
-        // 1) log 下 header + raw body
+        // log 下 header + raw body
         _logger.LogDebug("Headers: {Headers}", Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString()));
-        _logger.LogDebug("Raw Body: {Body}", body.GetRawText());
+        _logger.LogDebug("Raw Body: {Body}", data.ToString());
 
-        // 2) CloudEvent 'type' 檢查
-        // 嘗試取得 type
-        if (!body.TryGetProperty("type", out var typeProp))
-        {
-            _logger.LogWarning("No 'type' property in payload");
-            return BadRequest("Missing CloudEvent type");
-        }
-
-        _logger.LogDebug("Raw type property: {TypeRaw}", typeProp.GetRawText());
-
-        string eventType = typeProp.ValueKind switch
-        {
-            JsonValueKind.String => typeProp.GetString()!,
-            _ => typeProp.GetRawText().Trim('"')
-        };
-
-        if (!string.Equals(eventType, GcsFinalizeEventType, StringComparison.Ordinal))
-        {
-            _logger.LogWarning("Received non-finalize event: {Type}", eventType);
-            return BadRequest("Not a GCS finalize event");
-        }
-
-        // 3) 取 data 區段，Deserialize 時開 Case‑Insensitive
-        StorageEventData payload;
-        try
-        {
-            payload = body
-                .GetProperty("data")
-                .Deserialize<StorageEventData>(new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to deserialize StorageEventData");
-            return BadRequest("Invalid CloudEvent data payload");
-        }
-
-        // 4) 主程式
-        var (thumbKey, imageId) = await _imageSvc.ProcessAsync(payload, ct);
+        // 主程式
+        var (thumbKey, imageId) = await _imageSvc.ProcessAsync(data, ct);
         await _sqlSvc.MarkDoneAsync(imageId, thumbKey, ct);
 
         return Ok();

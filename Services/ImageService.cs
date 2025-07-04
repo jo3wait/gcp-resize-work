@@ -33,8 +33,7 @@ public sealed class ImageService
     public async Task<(string thumbPath, string imageId)> ProcessAsync(
         StorageEventData ev, CancellationToken ct)
     {
-        var imageId = ev.Metadata?["imageid"]
-                   ?? Path.GetFileNameWithoutExtension(ev.Name);
+        var imageId = Path.GetFileNameWithoutExtension(ev.Name);
 
         // 1. 下載原圖
         await using var src = new MemoryStream();
