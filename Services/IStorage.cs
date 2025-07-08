@@ -11,5 +11,5 @@ public interface IStorage
                        Stream destination, CancellationToken ct);
 
     Task UploadAsync(string bucket, string objectName, string contentType,
-                     Stream source, UploadObjectOptions options,CancellationToken ct);
+                     Stream source, CancellationToken ct);
 }

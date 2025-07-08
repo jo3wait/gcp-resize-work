@@ -20,6 +20,6 @@ public sealed class FakeStorage : IStorage
     }
 
     public Task UploadAsync(string bucket, string objectName, string contentType,
-                            Stream source, UploadObjectOptions options, CancellationToken ct)
+                            Stream source, CancellationToken ct)
         => Task.CompletedTask; // no-op
 }

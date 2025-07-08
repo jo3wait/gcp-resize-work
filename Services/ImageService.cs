@@ -86,7 +86,6 @@ public sealed class ImageService
             thumbKey, 
             "image/jpeg", 
             thumbStream,
-            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead },
             ct);
 
         return (thumbKey, imageId);
@@ -115,7 +114,6 @@ public sealed class ImageService
             key, 
             "image/jpeg", 
             th, 
-            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead }, 
             ct);
         return (key, imageId);
     }
