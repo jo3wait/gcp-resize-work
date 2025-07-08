@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Google.Cloud.Storage.V1;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.IO;
 using System.Threading;
@@ -19,6 +20,6 @@ public sealed class FakeStorage : IStorage
     }
 
     public Task UploadAsync(string bucket, string objectName, string contentType,
-                            Stream source, CancellationToken ct)
+                            Stream source, UploadObjectOptions options, CancellationToken ct)
         => Task.CompletedTask; // no-op
 }
