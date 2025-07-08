@@ -1,4 +1,5 @@
-﻿using ResizeWork.Models;
+﻿using Google.Cloud.Storage.V1;
+using ResizeWork.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
@@ -79,8 +80,14 @@ public sealed class ImageService
 
         // 4. 上傳縮圖
         var destBucket = _thumbBucket ?? ev.Bucket;
-        var thumbKey = $"{imageId}.jpg"; //var thumbKey = $"{imageId}_{(_targetBytes ?? ms.Length)/1024}KB.jpg";
-        await _storage.UploadAsync(destBucket, thumbKey, "image/jpeg", thumbStream, ct);
+        var thumbKey = $"{imageId}.jpg";
+        await _storage.UploadAsync(
+            destBucket, 
+            thumbKey, 
+            "image/jpeg", 
+            thumbStream,
+            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead },
+            ct);
 
         return (thumbKey, imageId);
     }
@@ -103,7 +110,13 @@ public sealed class ImageService
         th.Position = 0;
 
         var key = $"thumbs/{imageId}.jpg";  //var key = $"thumbs/{imageId}_{maxW}.jpg";
-        await _storage.UploadAsync(ev.Bucket, key, "image/jpeg", th, ct);
+        await _storage.UploadAsync(
+            ev.Bucket, 
+            key, 
+            "image/jpeg", 
+            th, 
+            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead }, 
+            ct);
         return (key, imageId);
     }
 }

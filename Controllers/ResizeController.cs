@@ -31,36 +31,25 @@ public sealed class ResizeController : ControllerBase
         _logger.LogWarning("Content-Type: {ContentType}", Request.ContentType);
         _logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()));
 
+        // 1. Enable buffering 並讀取原始 body
         Request.EnableBuffering();
-
-        // 2) 讀原始 Body（不指定 model binding）
         string rawBody;
-        using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true))
         {
-            rawBody = await reader.ReadToEndAsync();
-            // 如果後面還要重用 Request.Body，可以先重設 Position：
+            rawBody = await reader.ReadToEndAsync(ct);
             Request.Body.Position = 0;
         }
+        _logger.LogDebug("Raw request body: {RawBody}", rawBody);
 
-        _logger.LogWarning("Raw request body: {RawBody}", rawBody);
+        // 2. 解析 JSON
+        var data = JsonSerializer.Deserialize<StorageEventData>(rawBody, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
 
-        // 3) 接下來就可以根據 rawBody 內容自行決定要不要 JsonDocument.Parse(rawBody) 
-        //    或是直接把字串貼到 log 裡面，確認到底傳進來的格式長什麼樣子。
-        _logger.LogWarning("Headers: {Headers}", JsonDocument.Parse(rawBody));
-
-        //// log 下 header + raw body
-        //_logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString()));
-        //_logger.LogWarning("Raw Body: {Body}", body.GetRawText());
-
-        //StorageEventData? data = null;
-
-        //// 解析 CloudEvent JSON
-
-        //data = JsonSerializer.Deserialize<StorageEventData>(body.GetRawText());
-
-        //// 主程式
-        //var (thumbKey, imageId) = await _imageSvc.ProcessAsync(data, ct);
-        //await _sqlSvc.MarkDoneAsync(imageId, thumbKey, ct);
+        // 3. 主程式
+        var (thumbKey, imageId) = await _imageSvc.ProcessAsync(data, ct);
+        await _sqlSvc.MarkDoneAsync(imageId, thumbKey, ct);
 
         return Ok();
     }
