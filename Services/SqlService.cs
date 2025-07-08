@@ -6,7 +6,7 @@ public sealed class SqlService
 {
     private readonly string _cs = ConnectionHelper.Build();
 
-    public async Task MarkDoneAsync(string imageId, string thumbKey, CancellationToken ct)
+    public async Task MarkDoneAsync(string imageId, string thumbPath, CancellationToken ct)
     {
         const string sql = """
             UPDATE FILES
@@ -20,7 +20,7 @@ public sealed class SqlService
         await conn.OpenAsync(ct);
 
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@thumb", thumbKey);
+        cmd.Parameters.AddWithValue("@thumb", thumbPath);
         cmd.Parameters.AddWithValue("@id", imageId);
         await cmd.ExecuteNonQueryAsync(ct);
     }
