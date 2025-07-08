@@ -21,13 +21,13 @@ public sealed record StorageEventData
     /// 檔案的 MIME Type，例如 image/jpeg
     /// </summary>
     [JsonPropertyName("contentType")]
-    public string ContentType { get; init; } = default!;
+    public string? ContentType { get; init; } = default!;
 
     /// <summary>
-    /// 檔案的大小（Bytes），GCS 回傳的是字串，所以用 long? 來接
+    /// 檔案的大小（Bytes），GCS 回傳的是字串
     /// </summary>
     [JsonPropertyName("size")]
-    public long? Size { get; init; }
+    public string? Size { get; init; }
 
     /// <summary>
     /// 檔案第一次建立的 UTC 時間
