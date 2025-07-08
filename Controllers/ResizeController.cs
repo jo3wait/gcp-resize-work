@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CloudNative.CloudEvents.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using ResizeWork.Models;
 using ResizeWork.Services;
 using ResizeWorker.Services;
+using System.Text;
 using System.Text.Json;
 
 namespace ResizeWork.Controllers;
@@ -23,16 +25,39 @@ public sealed class ResizeController : ControllerBase
     /// 接收 CloudEvent JSON
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> Handle([FromBody] StorageEventData data,
+    public async Task<IActionResult> Handle(/*[FromBody] JsonElement body,*/
                                             CancellationToken ct = default)
     {
-        // log 下 header + raw body
-        _logger.LogDebug("Headers: {Headers}", Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString()));
-        _logger.LogDebug("Raw Body: {Body}", data.ToString());
+        _logger.LogDebug("Content-Type: {ContentType}", Request.ContentType);
+        _logger.LogDebug("Headers: {Headers}", Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()));
 
-        // 主程式
-        var (thumbKey, imageId) = await _imageSvc.ProcessAsync(data, ct);
-        await _sqlSvc.MarkDoneAsync(imageId, thumbKey, ct);
+        // 2) 讀原始 Body（不指定 model binding）
+        string rawBody;
+        using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
+        {
+            rawBody = await reader.ReadToEndAsync();
+            // 如果後面還要重用 Request.Body，可以先重設 Position：
+            Request.Body.Position = 0;
+        }
+
+        _logger.LogDebug("Raw request body: {RawBody}", rawBody);
+
+        // 3) 接下來就可以根據 rawBody 內容自行決定要不要 JsonDocument.Parse(rawBody) 
+        //    或是直接把字串貼到 log 裡面，確認到底傳進來的格式長什麼樣子。
+
+        //// log 下 header + raw body
+        //_logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString()));
+        //_logger.LogWarning("Raw Body: {Body}", body.GetRawText());
+
+        //StorageEventData? data = null;
+
+        //// 解析 CloudEvent JSON
+        
+        //data = JsonSerializer.Deserialize<StorageEventData>(body.GetRawText());
+
+        //// 主程式
+        //var (thumbKey, imageId) = await _imageSvc.ProcessAsync(data, ct);
+        //await _sqlSvc.MarkDoneAsync(imageId, thumbKey, ct);
 
         return Ok();
     }
