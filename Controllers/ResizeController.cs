@@ -31,6 +31,8 @@ public sealed class ResizeController : ControllerBase
         _logger.LogWarning("Content-Type: {ContentType}", Request.ContentType);
         _logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()));
 
+        Request.EnableBuffering();
+
         // 2) 讀原始 Body（不指定 model binding）
         string rawBody;
         using (var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true))
@@ -44,6 +46,7 @@ public sealed class ResizeController : ControllerBase
 
         // 3) 接下來就可以根據 rawBody 內容自行決定要不要 JsonDocument.Parse(rawBody) 
         //    或是直接把字串貼到 log 裡面，確認到底傳進來的格式長什麼樣子。
+        _logger.LogWarning("Headers: {Headers}", JsonDocument.Parse(rawBody));
 
         //// log 下 header + raw body
         //_logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(k => k.Key, v => v.Value.ToString()));
@@ -52,7 +55,7 @@ public sealed class ResizeController : ControllerBase
         //StorageEventData? data = null;
 
         //// 解析 CloudEvent JSON
-        
+
         //data = JsonSerializer.Deserialize<StorageEventData>(body.GetRawText());
 
         //// 主程式
