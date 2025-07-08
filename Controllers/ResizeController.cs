@@ -28,8 +28,8 @@ public sealed class ResizeController : ControllerBase
     public async Task<IActionResult> Handle(/*[FromBody] JsonElement body,*/
                                             CancellationToken ct = default)
     {
-        _logger.LogDebug("Content-Type: {ContentType}", Request.ContentType);
-        _logger.LogDebug("Headers: {Headers}", Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()));
+        _logger.LogWarning("Content-Type: {ContentType}", Request.ContentType);
+        _logger.LogWarning("Headers: {Headers}", Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()));
 
         // 2) 讀原始 Body（不指定 model binding）
         string rawBody;
@@ -40,7 +40,7 @@ public sealed class ResizeController : ControllerBase
             Request.Body.Position = 0;
         }
 
-        _logger.LogDebug("Raw request body: {RawBody}", rawBody);
+        _logger.LogWarning("Raw request body: {RawBody}", rawBody);
 
         // 3) 接下來就可以根據 rawBody 內容自行決定要不要 JsonDocument.Parse(rawBody) 
         //    或是直接把字串貼到 log 裡面，確認到底傳進來的格式長什麼樣子。
