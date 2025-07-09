@@ -80,13 +80,15 @@ public sealed class ImageService
 
         // 4. 上傳縮圖
         var destBucket = _thumbBucket ?? ev.Bucket;
-        var thumbPath = $"https://storage.googleapis.com/{_thumbBucket}/{imageId}.jpg";
+        var thumbKey = $"{imageId}.jpg";
         await _storage.UploadAsync(
             destBucket, 
-            thumbPath, 
+            thumbKey, 
             "image/jpeg", 
             thumbStream,
             ct);
+
+        var thumbPath = $"https://storage.googleapis.com/{destBucket}/{thumbKey}?response-content-disposition=attachment";
 
         return (thumbPath, imageId);
     }
