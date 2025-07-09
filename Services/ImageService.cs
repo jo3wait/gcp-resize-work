@@ -31,7 +31,7 @@ public sealed class ImageService
         _thumbBucket = Environment.GetEnvironmentVariable("THUMBS_BUCKET");
     }
 
-    public async Task<(string thumbPath, string imageId)> ProcessAsync(
+    public async Task<(decimal compSize, string thumbPath, string imageId)> ProcessAsync(
         StorageEventData ev, CancellationToken ct)
     {
         var imageId = Path.GetFileNameWithoutExtension(ev.Name);
@@ -89,11 +89,11 @@ public sealed class ImageService
             ct);
 
         var thumbPath = $"https://storage.googleapis.com/{destBucket}/{thumbKey}";
-
-        return (thumbPath, imageId);
+        decimal compSize = Math.Round(thumbStream.Length / 1024m, 1, MidpointRounding.AwayFromZero); // 縮圖大小 KB，1 位小數
+        return (compSize, thumbPath, imageId);
     }
 
-    private async Task<(string, string)> FixedResizeAsync(
+    private async Task<(decimal, string, string)> FixedResizeAsync(
         Stream src, StorageEventData ev, string imageId, CancellationToken ct)
     {
         var maxW = int.Parse(Environment.GetEnvironmentVariable("TARGET_MAX_W") ?? "1024");
@@ -110,13 +110,15 @@ public sealed class ImageService
         await img.SaveAsJpegAsync(th, ct);
         th.Position = 0;
 
-        var key = $"thumbs/{imageId}.jpg";  //var key = $"thumbs/{imageId}_{maxW}.jpg";
+        var key = $"thumbs/{imageId}.jpg";
         await _storage.UploadAsync(
             ev.Bucket, 
             key, 
             "image/jpeg", 
             th, 
             ct);
-        return (key, imageId);
+        var size = Math.Round(th.Length / 1024m, 1, MidpointRounding.AwayFromZero); // KB，1 位小數
+
+        return (size, key, imageId);
     }
 }

@@ -48,8 +48,8 @@ public sealed class ResizeController : ControllerBase
         });
 
         // 3. 主程式
-        var (thumbPath, imageId) = await _imageSvc.ProcessAsync(data, ct);
-        await _sqlSvc.MarkDoneAsync(imageId, thumbPath, ct);
+        var (compSize, thumbPath, imageId) = await _imageSvc.ProcessAsync(data, ct);
+        await _sqlSvc.MarkDoneAsync(imageId, compSize, thumbPath, ct);
 
         return Ok();
     }
