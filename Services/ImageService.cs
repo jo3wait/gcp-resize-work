@@ -88,7 +88,7 @@ public sealed class ImageService
             thumbStream,
             ct);
 
-        var thumbPath = $"https://storage.googleapis.com/{destBucket}/{thumbKey}?response-content-disposition=attachment";
+        var thumbPath = $"https://storage.googleapis.com/{destBucket}/{thumbKey}";
 
         return (thumbPath, imageId);
     }
