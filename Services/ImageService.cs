@@ -86,6 +86,7 @@ public sealed class ImageService
             thumbKey, 
             "image/jpeg", 
             thumbStream,
+            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead },
             ct);
 
         var thumbPath = $"https://storage.googleapis.com/{destBucket}/{thumbKey}";
@@ -115,7 +116,8 @@ public sealed class ImageService
             ev.Bucket, 
             key, 
             "image/jpeg", 
-            th, 
+            th,
+            new UploadObjectOptions { PredefinedAcl = PredefinedObjectAcl.PublicRead },
             ct);
         var size = Math.Round(th.Length / 1024m, 1, MidpointRounding.AwayFromZero); // KB，1 位小數
 

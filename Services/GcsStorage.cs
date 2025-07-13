@@ -17,7 +17,7 @@ public sealed class GcsStorage : IStorage
                                     options: null, progress: null, cancellationToken: ct);
 
     public Task UploadAsync(string bucket, string objectName, string contentType,
-                            Stream source, CancellationToken ct) =>
+                            Stream source, UploadObjectOptions options, CancellationToken ct) =>
         _client.UploadObjectAsync(bucket, objectName, contentType, source,
-                                  options: null, progress: null, cancellationToken: ct);
+                                  options: options, progress: null, cancellationToken: ct);
 }
